@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Vocabulary System</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+    background:#edf4ef;
+    color:#33443b;
+    min-height:100vh;
+    padding:20px;
+    transition:0.3s;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+}
+
+.header{
+    background:#f8fcf9;
+    border-radius:28px;
+    padding:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+.title{
+    font-size:28px;
+    font-weight:700;
+}
+
+.subtitle{
+    margin-top:8px;
+    color:#7a8f84;
+    font-size:14px;
+}
+
+.upload-box{
+    margin-top:22px;
+    border:2px dashed #b8d1c3;
+    border-radius:20px;
+    padding:30px;
+    text-align:center;
+    background:#f3faf6;
+    transition:0.2s;
+}
+
+.upload-box:hover{
+    background:#edf8f1;
+}
+
+.upload-box input{
+    display:none;
+}
+
+.upload-label{
+    cursor:pointer;
+    display:inline-block;
+    background:#8fb8a2;
+    color:white;
+    padding:12px 20px;
+    border-radius:14px;
+    font-size:15px;
+}
+
+.top-tools{
+    margin-top:22px;
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+button{
+    border:none;
+    background:#8fb8a2;
+    color:white;
+    padding:11px 18px;
+    border-radius:14px;
+    cursor:pointer;
+    transition:0.2s;
+    font-size:14px;
+}
+
+button:hover{
+    opacity:0.9;
+}
+
+.secondary{
+    background:#d7e7dd;
+    color:#395447;
+}
+
+input{
+    padding:11px;
+    border:none;
+    border-radius:14px;
+    background:#edf4ef;
+    color:#33443b;
+    outline:none;
+    width:100px;
+}
+
+.progress-area{
+    margin-top:22px;
+}
+
+.progress-text{
+    font-size:14px;
+    color:#71857a;
+}
+
+.progress{
+    margin-top:10px;
+    width:100%;
+    height:10px;
+    background:#dce8e1;
+    border-radius:999px;
+    overflow:hidden;
+}
+
+.progress-inner{
+    height:100%;
+    width:0%;
+    background:#8fb8a2;
+}
+
+.card{
+    margin-top:28px;
+    background:#f8fcf9;
+    border-radius:28px;
+    padding:45px 30px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+.word{
+    font-size:54px;
+    font-weight:700;
+    color:#3a4d42;
+}
+
+.phonetic{
+    margin-top:14px;
+    color:#7b9185;
+    font-size:19px;
+}
+
+.part{
+    margin-top:18px;
+    display:inline-block;
+    background:#e3efe8;
+    color:#486255;
+    padding:7px 16px;
+    border-radius:999px;
+    font-size:14px;
+}
+
+.meaning{
+    margin-top:18px;
+    font-size:20px;
+    line-height:1.9;
+}
+
+.example{
+    margin-top:24px;
+    color:#84968d;
+    font-size:15px;
+    line-height:1.8;
+}
+
+.bottom{
+    margin-top:35px;
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.favorite{
+    margin-top:22px;
+    color:#70857a;
+    font-size:15px;
+    cursor:pointer;
+}
+
+.stats{
+    margin-top:22px;
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+}
+
+.stat-box{
+    flex:1;
+    min-width:160px;
+    background:#f8fcf9;
+    border-radius:22px;
+    padding:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.04);
+}
+
+.stat-title{
+    color:#7d9186;
+    font-size:14px;
+}
+
+.stat-value{
+    margin-top:10px;
+    font-size:28px;
+    font-weight:700;
+}
+
+.empty{
+    margin-top:30px;
+    text-align:center;
+    color:#7f9488;
+    line-height:2;
+}
+
+.dark{
+    background:#1d2421;
+    color:#e6f1eb;
+}
+
+.dark .header,
+.dark .card,
+.dark .stat-box{
+    background:#2a332f;
+}
+
+.dark input{
+    background:#3c4742;
+    color:white;
+}
+
+.dark .word{
+    color:#f1fbf5;
+}
+
+.dark .part{
+    background:#415148;
+    color:#e2eee7;
+}
+
+.dark .secondary{
+    background:#4c5d54;
+    color:white;
+}
+
+@media(max-width:600px){
+
+    .word{
+        font-size:40px;
+    }
+
+    .card{
+        padding:35px 20px;
+    }
+
+    .header{
+        padding:20px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div class="title">
+            Vocabulary System
+        </div>
+
+        <div class="subtitle">
+            上传你的 json 词库，自动生成单词卡 ✨
+        </div>
+
+        <div class="upload-box">
+
+            <label class="upload-label">
+                上传词库 JSON
+                <input type="file" id="fileInput" accept=".json">
+            </label>
+
+            <div style="margin-top:14px;color:#7b9185;font-size:14px;">
+                支持自定义词库格式
+            </div>
+
+        </div>
+
+        <div class="top-tools">
+
+            <input type="number" id="jumpInput" placeholder="跳转">
+
+            <button onclick="jumpWord()">
+                GO
+            </button>
+
+            <button class="secondary" onclick="toggleMeaning()">
+                隐藏释义
+            </button>
+
+            <button class="secondary" onclick="randomWord()">
+                随机
+            </button>
+
+            <button class="secondary" onclick="toggleDark()">
+                夜间
+            </button>
+
+            <button class="secondary" onclick="showFavorites()">
+                生词本
+            </button>
+
+        </div>
+
+        <div class="progress-area">
+
+            <div class="progress-text" id="progressText">
+                暂未加载词库
+            </div>
+
+            <div class="progress">
+                <div class="progress-inner" id="progressBar"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="stats">
+
+        <div class="stat-box">
+            <div class="stat-title">
+                当前词库
+            </div>
+
+            <div class="stat-value" id="totalWords">
+                0
+            </div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-title">
+                已收藏
+            </div>
+
+            <div class="stat-value" id="favoriteCount">
+                0
+            </div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-title">
+                今日学习
+            </div>
+
+            <div class="stat-value" id="todayCount">
+                0
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card" id="card" style="display:none;">
+
+        <div class="word" id="word"></div>
+
+        <div class="phonetic" id="phonetic"></div>
+
+        <div class="part" id="part"></div>
+
+        <div class="meaning" id="meaning1"></div>
+
+        <div class="meaning" id="meaning2"></div>
+
+        <div class="example" id="example"></div>
+
+        <div class="favorite" onclick="toggleFavorite()" id="favoriteBtn">
+            ☆ 收藏单词
+        </div>
+
+        <div class="bottom">
+
+            <button onclick="prevWord()">
+                上一页
+            </button>
+
+            <button onclick="nextWord()">
+                下一页
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="empty" id="empty">
+        你还没有上传词库。<br>
+        先让 AI 帮你生成 json 文件，然后导入这里。
+    </div>
+
+</div>
+
+<script>
+
+let words = [];
+let currentIndex = 0;
+let meaningVisible = true;
+let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+
+const visitedToday =
+    JSON.parse(localStorage.getItem("todayWords") || "[]");
+
+function saveProgress(){
+
+    localStorage.setItem(
+        "progress",
+        currentIndex
+    );
+}
+
+function loadProgress(){
+
+    const saved =
+        localStorage.getItem("progress");
+
+    if(saved){
+
+        currentIndex = parseInt(saved);
+    }
+}
+
+function renderCard(){
+
+    if(words.length === 0) return;
+
+    const current = words[currentIndex];
+
+    document.getElementById("card").style.display = "block";
+    document.getElementById("empty").style.display = "none";
+
+    document.getElementById("word").innerText =
+        current.word || "";
+
+    document.getElementById("phonetic").innerText =
+        current.phonetic || "";
+
+    document.getElementById("part").innerText =
+        current.part || "";
+
+    document.getElementById("meaning1").innerText =
+        meaningVisible ?
+        "① " + (current.meanings?.[0] || "") :
+        "① ?????";
+
+    document.getElementById("meaning2").innerText =
+        meaningVisible ?
+        "② " + (current.meanings?.[1] || "") :
+        "② ?????";
+
+    document.getElementById("example").innerText =
+        current.example || "";
+
+    document.getElementById("progressText").innerText =
+        `学习进度：${currentIndex + 1} / ${words.length}`;
+
+    document.getElementById("progressBar").style.width =
+        ((currentIndex + 1) / words.length) * 100 + "%";
+
+    document.getElementById("totalWords").innerText =
+        words.length;
+
+    document.getElementById("favoriteCount").innerText =
+        favorites.length;
+
+    document.getElementById("todayCount").innerText =
+        visitedToday.length;
+
+    const isFav =
+        favorites.includes(current.word);
+
+    document.getElementById("favoriteBtn").innerText =
+        isFav ? "★ 已收藏" : "☆ 收藏单词";
+
+    if(!visitedToday.includes(current.word)){
+
+        visitedToday.push(current.word);
+
+        localStorage.setItem(
+            "todayWords",
+            JSON.stringify(visitedToday)
+        );
+    }
+
+    saveProgress();
+}
+
+function nextWord(){
+
+    if(currentIndex < words.length - 1){
+
+        currentIndex++;
+        renderCard();
+    }
+}
+
+function prevWord(){
+
+    if(currentIndex > 0){
+
+        currentIndex--;
+        renderCard();
+    }
+}
+
+function jumpWord(){
+
+    const num =
+        parseInt(document.getElementById("jumpInput").value);
+
+    if(num >= 1 && num <= words.length){
+
+        currentIndex = num - 1;
+        renderCard();
+
+    }else{
+
+        alert("请输入正确数字");
+    }
+}
+
+function toggleMeaning(){
+
+    meaningVisible = !meaningVisible;
+    renderCard();
+}
+
+function randomWord(){
+
+    currentIndex =
+        Math.floor(Math.random() * words.length);
+
+    renderCard();
+}
+
+function toggleDark(){
+
+    document.body.classList.toggle("dark");
+}
+
+function toggleFavorite(){
+
+    const current = words[currentIndex];
+
+    if(favorites.includes(current.word)){
+
+        favorites =
+            favorites.filter(
+                item => item !== current.word
+            );
+
+    }else{
+
+        favorites.push(current.word);
+    }
+
+    localStorage.setItem(
+        "favorites",
+        JSON.stringify(favorites)
+    );
+
+    renderCard();
+}
+
+function showFavorites(){
+
+    const favWords =
+        words.filter(
+            item => favorites.includes(item.word)
+        );
+
+    if(favWords.length === 0){
+
+        alert("你的生词本还是空的");
+        return;
+    }
+
+    words = favWords;
+    currentIndex = 0;
+
+    renderCard();
+}
+
+document.getElementById("fileInput")
+.addEventListener("change",function(e){
+
+    const file = e.target.files[0];
+
+    if(!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(event){
+
+        try{
+
+            words = JSON.parse(event.target.result);
+
+            loadProgress();
+
+            renderCard();
+
+            alert(
+                `成功导入 ${words.length} 个单词 ✨`
+            );
+
+        }catch(error){
+
+            alert("json 文件格式错误");
+        }
+    };
+
+    reader.readAsText(file);
+});
+
+document.addEventListener("keydown",function(e){
+
+    if(e.code === "Space"){
+
+        e.preventDefault();
+        nextWord();
+    }
+
+    if(e.key === "ArrowLeft"){
+
+        prevWord();
+    }
+
+    if(e.key === "ArrowRight"){
+
+        nextWord();
+    }
+});
+
+</script>
+
+</body>
+</html>
